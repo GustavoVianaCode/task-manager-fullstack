@@ -1,0 +1,23 @@
+version: '3.8'
+
+# 🗣️ COMO EXPLICAR NA ENTREVISTA: Eu uso o Docker Compose aqui para subir o banco
+# PostgreSQL sem precisar instalar nada na máquina. Assim, qualquer um que clonar
+# o projeto consegue rodar só com um 'docker-compose up -d'. Isso é uma prática
+# comum em times de desenvolvimento para garantir paridade entre ambientes.
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: task_manager_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-taskuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-taskpassword}
+      POSTGRES_DB: ${DB_NAME:-taskmanager}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
