@@ -29,11 +29,22 @@ export function useCreateTaskMutation() {
   // tem sucesso. Eu uso o 'queryClient.invalidateQueries' para invalidar o cache
   // da lista de tarefas — isso força o TanStack Query a refazer a busca e
   // mostrar a nova tarefa na lista automaticamente. É um padrão muito elegante.
+  // 
+  // O 'onError' é executado quando a requisição falha, garantindo que o usuário
+  // receba feedback imediato e que o estado de loading seja resetado.
   return useMutation({
     mutationFn: (payload: CreateTaskPayload) => createTask(payload),
     onSuccess: () => {
       // Invalida o cache da listagem para refetch automático
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+    onError: (error: Error) => {
+      // 🗣️ COMO EXPLICAR NA ENTREVISTA: O 'onError' é disparado quando a mutação falha.
+      // TanStack Query automaticamente reseta 'isPending' para false, destravando o botão.
+      // Exibimos um alerta simples para o usuário saber que algo deu errado.
+      // Em uma aplicação real, usaríamos um Toast/Snackbar em vez de alert().
+      const message = error instanceof Error ? error.message : 'Erro ao conectar com o servidor';
+      alert(`❌ ${message}`);
     },
   });
 }
